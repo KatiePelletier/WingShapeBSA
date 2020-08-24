@@ -1,0 +1,5 @@
+samtools merge /2/scratch/Katie/WingShapeBSA/mapped/bwa/BAM_files/merge/allFiles/ds_CN_all.bam dsCRA_TCCGGAGA-GTACTGAC_merged_aligned_PE_realigned_rmd.bam dsCRB_CGCTCATT-TATAGCCT_merged_aligned_PE_realigned_rmd.bam dsCRC_CGCTCATT-ATAGAGGC_merged_aligned_PE_realigned_rmd.bam
+
+samtools merge /2/scratch/Katie/WingShapeBSA/mapped/bwa/BAM_files/merge/allFiles/ds_Dn_all.bam dsDNA_CGCTCATT-CCTATCCT_merged_aligned_PE_realigned_rmd.bam dsDNB_CGCTCATT-GGCTCTGA_merged_aligned_PE_realigned_rmd.bam dsDNC_ATTACTCG-TAATCTTA_merged_aligned_PE_realigned_rmd.bam
+
+samtools merge /2/scratch/Katie/WingShapeBSA/mapped/bwa/BAM_files/merge/allFiles/ds_UP_all.bam dsUPA_ATTACTCG-CAGGACGT_merged_aligned_PE_realigned_rmd.bam dsUPB_ATTACTCG-GTACTGAC_merged_aligned_PE_realigned_rmd.bam dsUPC_TCCGGAGA-TATAGCCT_merged_aligned_PE_realigned_rmd.bam
