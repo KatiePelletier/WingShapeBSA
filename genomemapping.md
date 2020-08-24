@@ -3,7 +3,7 @@
 Trimming adapter sequences from files.  I used a very large adapter file because subsets of this were leaving adapter contamination in my sequences 
 Set minimum length to 36 bases. 
 
-[trimming script] (https://github.com/KatiePelletier/WingShapeBSA/blob/master/trim.sh)
+[trimming script](https://github.com/KatiePelletier/WingShapeBSA/blob/master/trim.sh)
 
 
 Mapped with BWA to the Drosophila melanogaster v6.23 genome
@@ -12,7 +12,7 @@ Mapped with BWA to the Drosophila melanogaster v6.23 genome
 
 I then merged reads from the same biological sample. Samples were sequenced twice to increase read depth. 
 
-[merging biological replicates] (https://github.com/KatiePelletier/WingShapeBSA/blob/master/merge.sh)
+[merging biological replicates](https://github.com/KatiePelletier/WingShapeBSA/blob/master/merge.sh)
 
 Following mapping, I converted SAM to BAM files (compressing) using SAMtools. This step also sorts the file.
 Will also filter for mapping quality less than 20. 
