@@ -1,4 +1,4 @@
-#Mapping and preparing sequences for analysis 
+# Mapping and preparing sequences for analysis 
 
 Trimming adapter sequences from files.  I used a very large adapter file because subsets of this were leaving adapter contamination in my sequences 
 Set minimum length to 36 bases. 
@@ -19,7 +19,7 @@ Will also filter for mapping quality less than 20.
 
 [convert to BAM and sort](https://github.com/KatiePelletier/WingShapeBSA/blob/master/samTObam.sh)
 
-#Realigning around indels using GATK 
+# Realigning around indels using GATK 
 
 First I have to add read group information. In the future, I should do this earlier in the pipeline 
 
