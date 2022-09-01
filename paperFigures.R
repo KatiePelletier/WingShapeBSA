@@ -30,7 +30,7 @@ landmarks <- ggdraw() + draw_image(landmarks.crop)
 
 #ds effect 
 
-dseffect.raw <- image_read("../Figures/ds_KDeffectPlot_geomorph.png")
+dseffect.raw <- image_read("../Figures/ds_KDeffectPlot_geomorph_1x.png")
 dseffect.crop <- image_trim(dseffect.raw)
 dseffect <- ggdraw() + draw_image(dseffect.crop)
 
@@ -93,7 +93,7 @@ rm(list = ls())
 source("dsreponsetosel.R")
 #this is the response to seleciton following mutliple
 
-m.response <- ggplot(male_means, aes(x = gen, y = ds, shape = line, col = rep)) +
+f.response <- ggplot(female_means, aes(x = gen, y = ds, shape = line, col = rep)) +
   geom_point(alpha = 0.5) + 
   geom_line(alpha = 0.2) + 
   scale_colour_manual(values=c('black', 'grey46', 'grey57')) +
@@ -153,17 +153,17 @@ m.response <- ggplot(male_means, aes(x = gen, y = ds, shape = line, col = rep)) 
 #            winglwd=c(1, 1, 1))
 # dev.off()
 
-ds.sel.control.raw <- image_read("../Figures/ds_selection_shapechange_CN_M1v7.png")
+ds.sel.control.raw <- image_read("../Figures/ds_selection_shapechange_CN_F1v7_2x.png")
 ds.sel.control.crop <- image_trim(ds.sel.control.raw)
 ds.sel.control.crop.r <- image_flop(ds.sel.control.crop)
 ds.sel.control <- ggdraw() + draw_image(ds.sel.control.crop.r)
 
-ds.sel.up.raw <- image_read("../Figures/ds_selection_shapechange_UP_M1v7.png")
+ds.sel.up.raw <- image_read("../Figures/ds_selection_shapechange_UP_F1v7_2x.png")
 ds.sel.up.crop <- image_trim(ds.sel.up.raw)
 ds.sel.up.crop.r <- image_flop(ds.sel.up.crop)
 ds.sel.up <- ggdraw() + draw_image(ds.sel.up.crop.r)
 
-ds.sel.down.raw <- image_read("../Figures/ds_selection_shapechange_DN_M1v7.png")
+ds.sel.down.raw <- image_read("../Figures/ds_selection_shapechange_DN_F1v7_2x.png")
 ds.sel.down.crop <- image_trim(ds.sel.down.raw)
 ds.sel.down.crop.r <- image_flop(ds.sel.down.crop)
 ds.sel.down <- ggdraw() + draw_image(ds.sel.down.crop.r)
@@ -177,7 +177,7 @@ wing.col <- plot_grid(ds.sel.up, ds.sel.control, ds.sel.down,
                       labels = c("Up Selection", "No Selection", "Down Selection"))
 
 
-figure_3_top <- plot_grid(m.response, wing.col, 
+figure_3_top <- plot_grid(f.response, wing.col, 
                       ncol = 2, nrow = 1, scale = c(1, 0.9), 
                       rel_widths = c(1, 0.6))
 
@@ -206,13 +206,24 @@ linescan <- ggplot(data = fixed_artsel.5000, aes(x=number, y=dnup, color=chr, al
         panel.border = element_rect(colour = "black", 
                                     fill=NA, size=0.5))
 
+# f.response <- ggplot(female_means, aes(x = gen, y = emc, shape = treat, col = rep)) +
+#   geom_point(alpha = 0.5) + 
+#   geom_line(alpha = 0.2) + 
+#   scale_colour_manual(values=c('black', 'grey46', 'grey57')) +
+#   geom_line(data = linegen_effect2, col = "red") + 
+#   theme_classic() + 
+#   ylab(expression(paste(italic("ds"), " shape score")))+
+#   xlab("Generation") + 
+#   theme(legend.position = "none")  + 
+#   scale_x_continuous(breaks = 1:7)  
+
 
 figure_3 <- plot_grid(figure_3_top, linescan, 
                       ncol = 1, nrow = 2, scale = c(1, 0.95),
                       rel_heights = c(1, 0.6),
                       labels = c("A", "B"))
 
-png("../Figures/fig3_dsSelection.png", width =2000, height = 2000, units = "px",res = 300)
+png("../Figures/fig3_dsSelection_new.png", width =2000, height = 2000, units = "px",res = 300)
 figure_3
 dev.off()
 
@@ -221,6 +232,7 @@ dev.off()
 
 rm(list = ls())
 
+source("emc_responsetosel.R")
 source("emc_FINAL_artselgenome.R")
 
 linescan <- ggplot(data = fixed_artsel.5000, aes(x=number, y=dnup, color=chr, alpha = outlier)) + 
@@ -242,10 +254,56 @@ linescan <- ggplot(data = fixed_artsel.5000, aes(x=number, y=dnup, color=chr, al
         panel.border = element_rect(colour = "black", 
                                     fill=NA, size=0.5))
 
+f.response <- ggplot(female_means, aes(x = gen, y = emc, shape = treat, col = rep)) +
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.2) + 
+  scale_colour_manual(values=c('black', 'grey46', 'grey57')) +
+  geom_line(data = linegen_effect2[linegen_effect2$Sex =="F",], col = "red") + 
+  theme_classic() + 
+  ylab(expression(paste(italic("emc"), " shape score")))+
+  xlab("Generation") + 
+  theme(legend.position = "none")  + 
+  scale_x_continuous(breaks = 1:7)  
+
+emc.sel.control.raw <- image_read("../Figures/emc_selection_shapechange_CR_F1v7_10xmag.png")
+emc.sel.control.crop <- image_trim(emc.sel.control.raw)
+emc.sel.control.crop.r <- image_flop(emc.sel.control.crop)
+emc.sel.control <- ggdraw() + draw_image(emc.sel.control.crop.r)
+
+emc.sel.up.raw <- image_read("../Figures/emc_selection_shapechange_UP_F1v7_10xmag.png")
+emc.sel.up.crop <- image_trim(emc.sel.up.raw)
+emc.sel.up.crop.r <- image_flop(emc.sel.up.crop)
+emc.sel.up <- ggdraw() + draw_image(emc.sel.up.crop.r)
+
+emc.sel.down.raw <- image_read("../Figures/emc_selection_shapechange_DN_F1v7_10xmag.png")
+emc.sel.down.crop <- image_trim(emc.sel.down.raw)
+emc.sel.down.crop.r <- image_flop(emc.sel.down.crop)
+emc.sel.down <- ggdraw() + draw_image(emc.sel.down.crop.r)
 
 
-png("../Figures/fig4_emcSel_missingShape.png", width =1000, height = 500, units = "px",res = 200)
-linescan
+
+emc.wing.col <- plot_grid(emc.sel.up, emc.sel.control, emc.sel.down,
+                      ncol = 1, nrow = 3,
+                      scale = 0.75, 
+                      label_size = 8, 
+                      labels = c("Up Selection", "No Selection", "Down Selection"))
+
+
+figure_4_top <- plot_grid(f.response, emc.wing.col, 
+                          ncol = 2, nrow = 1, scale = c(1, 0.9), 
+                          rel_widths = c(1, 0.6))
+
+
+
+figure_4 <- plot_grid(figure_4_top, linescan, 
+                      ncol = 1, nrow = 2, scale = c(1, 0.95),
+                      rel_heights = c(1, 0.6),
+                      labels = c("A", "B"))
+
+
+
+png("../Figures/fig4_emcSel_new.png", width =1000, height = 1000, units = "px",res = 200)
+figure_4
 dev.off()
 
 #Figure 5. Fst for both wild groups. 
@@ -259,7 +317,7 @@ source("poolmeans.R")
 # WingPlot(cmo14.right, wingcol="red", add=T)
 # dev.off()
 
-ds.pool.groups.raw <- image_read("../Figures/ds_wildpools_shapechange_cmo.png")
+ds.pool.groups.raw <- image_read("../Figures/ds_wildpools_shapechange_cmo_mag2.png")
 ds.pool.groups.crop <- image_trim(ds.pool.groups.raw)
 ds.pool.groups.crop.r <- image_flop(ds.pool.groups.crop)
 ds.pools.groups <- ggdraw() + draw_image(ds.pool.groups.crop.r)
@@ -325,46 +383,64 @@ dev.off()
 
 ###########################SUPPPS#####################
 
+###########genomes-all###############
+
+ds.genome.all.lines <- image_read("../Figures/5000windows_allmarked_3sd_allsites.png")
+ds.genome.all.lines.crop <- image_trim(ds.genome.all.lines)
+ds.genome.all.good <- ggdraw() + draw_image(ds.genome.all.lines.crop)
+
+emc.genome.all.lines <- image_read("../Figures/emc_5000windows_all_lines_3sd.png")
+emc.genome.all.lines.crop <- image_trim(emc.genome.all.lines)
+emc.genome.all.good <- ggdraw() + draw_image(emc.genome.all.lines.crop)
+
+png("../Figures/allLines_artSelGenome.png", 
+    width =2000, height = 1500, 
+    units = "px",res = 300)
+
+plot_grid(ds.genome.all.good, emc.genome.all.good , 
+          ncol = 1, nrow = 2, 
+          labels = c("A", "B"))
+dev.off()
+
 
 #########Neur Wild###################
 rm(list = ls())
 
 source("poolmeans.R")
 
-png("../Figures/cmo_neurLvRpoolshapes.png")
-WingPlot(neur.cmo14.left, wingcol="black")
-WingPlot(neur.cmo14.right, wingcol="red", add=T)
-dev.off()
+# png("../Figures/cmo_neurLvRpoolshapes_mag2.png")
+# WingPlot(neur.cmo14.left, wingcol="black")
+# WingPlot(neur.cmo14.right, wingcol="red", add=T)
+# dev.off()
 
-neur.pool.groups.raw <- image_read("../Figures/cmo_neurLvRpoolshapes.png")
+neur.pool.groups.raw <- image_read("../Figures/wildpools_shapechange_cmo_mag2.png")
 neur.pool.groups.crop <- image_trim(neur.pool.groups.raw)
-neur.pools.groups <- ggdraw() + draw_image(neur.pool.groups.crop)
+neur.pool.groups.crop.r <- image_flop(neur.pool.groups.crop)
+neur.pools.groups <- ggdraw() + draw_image(neur.pool.groups.crop.r)
 
-source("neur_cmh.R")
+source("neur_ACER_cmh_plotting.R")
 
-neur_cmh_plot <- ggplot(data = fixed_wildneur_cmh, aes(x=number, y=logpval, color=chr)) + 
+neur_cmh_plot <- ggplot(data = neur.cmh.fix, aes(x=number, y=logp, color=chr)) + 
   geom_point(size=1, show.legend = F, alpha = 0.6) + 
   theme(panel.background = element_blank()) +
   xlab("Chromosome") +
-  ylab("-log p-value") +
+  ylab("-log(p-val)") +
   scale_colour_manual(values=c('black', 'grey46', 'black', 'grey46', 'black','grey46')) +
-  geom_point(data = hits, aes(x=number, y=logpval), col = "red")+
-  scale_x_discrete(limits=c(chrlabel),
+  geom_point(data = hits, aes(x=number, y=logp), col = "red")+
+  scale_x_discrete(limits=c(neur.cmh.middle),
                    labels = c("X","2L", "2R", '3L', '3R', '4')) +
-  theme(text = element_text(size=10),
-        axis.text.x= element_text(size=10), 
-        axis.text.y= element_text(size=10))
+  theme(text = element_text(size=15),
+        axis.text.x= element_text(size=12), 
+        axis.text.y= element_text(size=12))
 
-neurplot <- ggplot(data = neur, aes(x=pos, y=logpval)) + 
+neurplot <- ggplot(data = neur, aes(x=pos, y=logp)) + 
   geom_point(size=1, show.legend = F, alpha = 0.6) + 
   theme(panel.background = element_blank()) +
-  ylim(0, 20) + 
-  geom_point(data = neur_FDR, aes(x=number, y=logpval), col = "red")+
-  xlab(expression(paste("postition ", italic("neur")))) +
-  ylab("-log p-value") +
-  theme(text = element_text(size=8),
-        axis.text.x= element_text(size=8), 
-        axis.text.y= element_text(size=8))
+  xlab("postition") +
+  ylab("-log(p-val)") +
+  theme(text = element_text(size=15),
+        axis.text.x= element_text(size=12), 
+        axis.text.y= element_text(size=12))
 
 
 neur.cmh.shape <- plot_grid(neurplot, neur.pools.groups, 
@@ -486,4 +562,46 @@ bothsex <- plot_grid(f14, f14all, labels = c("A", "B"), label_size = 10)
 
 png("../Figures/corrPlot_females_supp.png")
 bothsex
+dev.off()
+
+
+######Shape change supplemental######
+
+dseffect.raw <- image_read('../Figures/ds_KDeffectPlot_geomorph_1x.png')
+dseffect.crop <- image_trim(dseffect.raw)
+dseffect <- ggdraw() + draw_image(dseffect.crop)
+
+
+emceffect.raw <- image_read("../Figures/emc_KDeffectPlot_geomorph_10x.png")
+emceffect.crop <- image_trim(emceffect.raw)
+emceffect <- ggdraw() + draw_image(emceffect.crop)
+
+neureffect.raw <- image_read("../Figures/neur_KDeffectPlot_geomorph_2x.png")
+neureffect.crop <- image_trim(neureffect.raw)
+neureffect <- ggdraw() + draw_image(neureffect.crop)
+
+png("../Figures/../Figures/dictVecKD_normalMag.png", width =720, height = 300, units = "px",res = 300)
+plot_grid(dseffect, emceffect, neureffect, ncol = 3, nrow = 1, 
+         scale = c(0.9, 0.9, 0.9), 
+          labels = c("ds 1x", "emc 10x", "neur 2x"),
+          label_size = 8,
+          rel_heights = (c(0.9, 0.9, 0.9)) )
+
+dev.off()
+
+
+#######################################
+Fdsbur.raw <- image_read("../Figures/dsSel_F_wingBlur.png")
+Fdsbur.crop <- image_trim(Fdsbur.raw)
+Fdsbur.crop.r <- image_flop(Fdsbur.crop)
+Fdsbur <- ggdraw() + draw_image(Fdsbur.crop.r)
+
+
+Mdsbur.raw <- image_read("../Figures/dsSel_M_wingBlur.png")
+Mdsbur.crop <- image_trim(Mdsbur.raw)
+Mdsbur.crop.r <- image_flop(Mdsbur.crop)
+Mdsbur <- ggdraw() + draw_image(Mdsbur.crop.r)
+
+png("../Figures/dsSelectionBlurs.png", height = 250, width = 500)
+plot_grid(Fdsbur, Mdsbur, labels = c("A", "B"))
 dev.off()

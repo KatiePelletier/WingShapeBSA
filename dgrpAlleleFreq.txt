@@ -1,0 +1,10 @@
+vcftools --vcf dgrp2_2L.vcf --out dgrp2_ds --chr 2L --from-bp 640013 --to-bp 714983 --site-pi &
+vcftools --vcf dgrp2_3L.vcf --out dgrp2_emc --chr 3L --from-bp 749400 --to-bp 753492 --site-pi
+
+
+
+
+
+
+
+curl -O https://resources.aertslab.org/DGRP2/NCSU/final/dm6/DGRP2.source_NCSU.dm6.final.bcf

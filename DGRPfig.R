@@ -9,8 +9,8 @@ source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R" )
 
 #library(tidyverse)
 library(lme4)
-#from the 2019 paper. 
-dgrp <- read.csv("../Data/BothLabs_Wings_28Oct.csv",  
+#from the 2019 paper.
+dgrp <- read.csv("../Data/BothLabs_Wings_28Oct.csv",
                  header=TRUE, nrows=22923, stringsAsFactors = TRUE)
 
 projFunction <- function(x, y) {
@@ -18,7 +18,7 @@ projFunction <- function(x, y) {
   return(scalarProj)
 }
 
-##### Edited from the WRP_functions file to round better. 
+##### Edited from the WRP_functions file to round better.
 panel.cor <- function(x, y) {
   r <- cor(x, y)
   par( usr =c(0, 1, 0, 1))
@@ -27,9 +27,10 @@ panel.cor <- function(x, y) {
 }
 ######
 
+dgrp <- read.csv("../Data/BothLabs_Wings_28Oct.csv")
 
 str(dgrp)
-#line 761 has some 'probably M' this is one of the selected lines for the art sel experiment. 
+#line 761 has some 'probably M' this is one of the selected lines for the art sel experiment.
 with(dgrp, table(Line, Sex))
 
 hist(dgrp$Csize)
@@ -45,7 +46,7 @@ dwo_wings <- dgrp[dgrp$Lab == "Dwo", ]
 
 #This is just total shape, will check common allometry just in case
 # This ignores sex totally.
-lm_shape <- lm(as.matrix(dwo_wings[,10:105]) ~ 0 + Line, 
+lm_shape <- lm(as.matrix(dwo_wings[,10:105]) ~ 0 + Line,
                data = dwo_wings)
 
 # With sex
@@ -67,7 +68,7 @@ rownames(estimates_shape)
 
 
 # With sex effects accounted for as an average sex effect on shape
-lm_shape_sex <- lm(as.matrix(dwo_wings[,10:105]) ~ 0 + Line:Sex, 
+lm_shape_sex <- lm(as.matrix(dwo_wings[,10:105]) ~ 0 + Line:Sex,
                data = dwo_wings,
                subset = dwo_wings$Sex != "probablyM")
 
@@ -99,7 +100,7 @@ WingPlot(new_crap [1,], wingcol = "blue")
 WingPlot(new_crap [2,],  wingcol = "purple", add = T)
 
 
-#Now need to grab the PCs for projection. 
+#Now need to grab the PCs for projection.
 lines <- rownames(estimates_shape)
 
 # please note KP... that this way is using the line means for the PCA, so it is kind of a quick and dirty G matrix.
@@ -107,7 +108,7 @@ lines <- rownames(estimates_shape)
 # So one potential source of differences in the projections as relating to the PCs is whether you are (like below) using the total phenotypic VCV matrix or the approximation of the genetic VCV matrix.
 
 line.PC <- data.frame(lines, estimates_shape, prcomp(estimates_shape)$x[,1:56])
-#just looks cleaner. 
+#just looks cleaner.
 rownames(line.PC) <- c()
 head(line.PC)
 
@@ -120,10 +121,25 @@ vec2 <- read.csv("../Data/newdict_vectors_uncorrelated_to_ds.csv")
 str(vec2)
 neur <- vec2[5,2:97]
 
+
+#now we want to get the relationship between selection vectors for the paper.
+
+#ds and emc
+#0.6553712
+cor(as.numeric(selvec[1,3:98]), as.numeric(selvec[2,3:98]))
+
+#ds and neur
+#0.03464236
+cor(as.numeric(selvec[1,3:98]), as.numeric(neur))
+
+#emc and neur
+#0.3008779
+cor(as.numeric(selvec[2,3:98]), as.numeric(neur))
+
 mshape <- colMeans(estimates_shape)
 
 #This is all messed up?
-#This doesn't look like the same as what I have drawn before. I think it is the DGRP data set. 
+#This doesn't look like the same as what I have drawn before. I think it is the DGRP data set.
 #Also looks fucked witht the dgrp means. or with a single line mean.
 # Maybe not common superimposition?
 WingEffect( meanshape=as.matrix(mshape) , effectplus=as.matrix( selvec[1,3:98]/100 ),
@@ -146,8 +162,8 @@ WingEffect( meanshape=estimates_shape[6,] , effectplus=as.matrix(diff_crap ),
             effectminus=as.matrix(diff_crap),
             scale.factor=2, wingcol=c("black", "blue", "red") , meanline = T)
 
-#Now projecting the data onto the shape change vecs. 
-#using model estimated means. 
+#Now projecting the data onto the shape change vecs.
+#using model estimated means.
 line.PC$ds <- as.matrix(line.PC[,2:97]) %*% t(selvec[1,3:98])
 line.PC$ds1 <- projFunction(x = as.matrix(line.PC[,2:97]), y = t(as.matrix(selvec[1,3:98])))
 
@@ -163,14 +179,14 @@ pairs(line.PC[, c(154:156, 98:100)], lower.panel = panel.cor)
 
 ##############Going to try with both labs#############
 
-#fitted a more complete model here and using both labs. 
+#fitted a more complete model here and using both labs.
 str(dgrp)
 with(dgrp, table(Line, Sex))
-#going to take out the probably M line 
+#going to take out the probably M line
 dgrp <- droplevels(dgrp[dgrp$Sex != "probablyM",])
 with(dgrp, table(Lab, Sex))
 #also want to remove lines with less than 10 observations/sex.
-#this is only actually two lines. line_306 &  line_256 
+#this is only actually two lines. line_306 &  line_256
 
 dgrp <- dgrp[dgrp$Line != "line_306",]
 dgrp <- dgrp[dgrp$Line != "line_256",]
@@ -180,7 +196,7 @@ dim(with(dgrp, table(Line, Sex)))
 
 lines <- rownames(with(dgrp, table(Line, Sex)))
 
-lm_dgrp <- lm(as.matrix(dgrp[, 10:105]) ~ 0 + Line:Sex, 
+lm_dgrp <- lm(as.matrix(dgrp[, 10:105]) ~ 0 + Line:Sex,
               data = dgrp)
 
 crap <- coef(lm_dgrp)
@@ -215,22 +231,20 @@ WingPlot(new_crap [2,],  wingcol = "purple", add = T)
 
 #Quick and dirty G matrix
 line.PC <- data.frame(lines, new_crap, prcomp(new_crap)$x[,1:56])
-#just looks cleaner. 
+#just looks cleaner.
 rownames(line.PC) <- c()
 head(line.PC)
 
 
-
-
-#Now projecting the data onto the shape change vecs. 
-#using model estimated means. 
-line.PC$ds <- projFunction(x = as.matrix(line.PC[,2:97]), 
+#Now projecting the data onto the shape change vecs.
+#using model estimated means.
+line.PC$ds <- projFunction(x = as.matrix(line.PC[,2:97]),
                            y = t(as.matrix(selvec[1,3:98])))
 
-line.PC$emc <- projFunction(x = as.matrix(line.PC[,2:97]), 
+line.PC$emc <- projFunction(x = as.matrix(line.PC[,2:97]),
                             y = t(as.matrix(selvec[2,3:98])))
-  
-line.PC$neur <- projFunction(x = as.matrix(line.PC[,2:97]), 
+
+line.PC$neur <- projFunction(x = as.matrix(line.PC[,2:97]),
                              y = t(as.matrix(neur)))
 
 
@@ -238,13 +252,13 @@ line.PC$neur <- projFunction(x = as.matrix(line.PC[,2:97]),
 pairs(line.PC[, c(154:156, 98:100)], lower.panel = panel.cor)
 #dev.off()
 
-###########one more time but accounting for allometry############ 
-#mean centering CS 
+###########one more time but accounting for allometry############
+#mean centering CS
 dgrp$Csize_c <- dgrp$Csize - mean(dgrp$Csize)
 
 
 #common allometrey is a bad assumption .
-lm_dgrp <- lm(as.matrix(dgrp[, 10:105]) ~ 0 + Csize + Line:Sex, 
+lm_dgrp <- lm(as.matrix(dgrp[, 10:105]) ~ 0 + Csize + Line:Sex,
               data = dgrp)
 
 allo.coef <- coef(lm_dgrp)
@@ -278,23 +292,23 @@ WingPlot(allo.coef2[2,],  wingcol = "purple", add = T)
 
 #Quick and dirty G matrix
 allo.PC <- data.frame(lines, allo.coef2, prcomp(allo.coef2)$x[,1:56])
-#just looks cleaner. 
+#just looks cleaner.
 rownames(allo.PC) <- c()
 head(allo.PC)
 
-#PCA from landmarks 
+#PCA from landmarks
 lm.pc <- prcomp(dgrp[,10:105])$x[,1:56]
 lm.pc.allo <- data.frame()
 
-#Now projecting the data onto the shape change vecs. 
-#using model estimated means. 
-allo.PC$ds <- projFunction(x = as.matrix(allo.PC[,2:97]), 
+#Now projecting the data onto the shape change vecs.
+#using model estimated means.
+allo.PC$ds <- projFunction(x = as.matrix(allo.PC[,2:97]),
                            y = t(as.matrix(selvec[1,3:98])))
 
-allo.PC$emc <- projFunction(x = as.matrix(allo.PC[,2:97]), 
+allo.PC$emc <- projFunction(x = as.matrix(allo.PC[,2:97]),
                             y = t(as.matrix(selvec[2,3:98])))
 
-allo.PC$neur <- projFunction(x = as.matrix(allo.PC[,2:97]), 
+allo.PC$neur <- projFunction(x = as.matrix(allo.PC[,2:97]),
                              y = t(as.matrix(neur)))
 
 
@@ -304,9 +318,9 @@ pairs(allo.PC[, c(154:156, 98:100)], lower.panel = panel.cor)
 
 ###################Using all the data for projection?##############
 
-#First want to model out sex and allometry 
-#This isn't working. 
-#I have no idea what I am doing.This is not right. I have no idea what Ian was talking about  
+#First want to model out sex and allometry
+#This isn't working.
+#I have no idea what I am doing.This is not right. I have no idea what Ian was talking about
 lm_landmarks <- lm(as.matrix(dgrp[,10:105]) ~  Csize*Sex ,
                    data = dgrp)
 
@@ -314,26 +328,26 @@ summary(lm_landmarks)
 
 mod.resid <- lm_landmarks$residuals
 
-#this works. 
+#this works.
 dim(dgrp)
 dim(mod.resid)
 
-#PCA from landmarks 
+#PCA from landmarks
 lm.pc <- prcomp(mod.resid)$x[,1:56]
 lm.pc.allo <- data.frame(dgrp, mod.resid, lm.pc)
 
-#now projecting onto the landmarks. 
-lm.pc.allo$ds <- projFunction(x = as.matrix(mod.resid), 
+#now projecting onto the landmarks.
+lm.pc.allo$ds <- projFunction(x = as.matrix(mod.resid),
                            y = t(as.matrix(selvec[1,3:98])))
 
-lm.pc.allo$emc <- projFunction(x = as.matrix(mod.resid), 
+lm.pc.allo$emc <- projFunction(x = as.matrix(mod.resid),
                             y = t(as.matrix(selvec[2,3:98])))
 
-lm.pc.allo$neur <- projFunction(x = as.matrix(mod.resid), 
+lm.pc.allo$neur <- projFunction(x = as.matrix(mod.resid),
                              y = t(as.matrix(neur)))
 
-#Now I want to get the mean for each line. 
-lm.project.means <- aggregate(lm.pc.allo[,204:262], 
+#Now I want to get the mean for each line.
+lm.project.means <- aggregate(lm.pc.allo[,204:262],
                        by=list( Line=lm.pc.allo$Line),
                        FUN=mean )
 
@@ -355,7 +369,7 @@ cor(ds, neur2)
 cor(emc, neur2)
 
 
-#########I want to deal with the funky looking wing effect plot by using geomorph rather than messing with this. 
+#########I want to deal with the funky looking wing effect plot by using geomorph rather than messing with this.
 
 cord <- as.matrix(dwo_wings[,10:105])
 shape <- arrayspecs(cord, 48, 2)
@@ -365,26 +379,26 @@ dgrp <- geomorph.data.frame(shape = shape,
                             rep = dwo_wings$Rep,
                             sex = dwo_wings$Sex)
 
-#This has Maria's stuff added. 
+#This has Maria's stuff added.
 source("~/Dropbox/KatiePelletier/KP_geomorphwingfunctions.R")
 
-#need a ref. 
+#need a ref.
 m <- mshape(dgrp$shape)
 plot(m, links = wing.links)
 
 #there is no clear way to plot the vector change.
 #for now I am going to try to just calculate this with subtraction?
 
-#first need put the ds shape change vec into the same format as this one 
+#first need put the ds shape change vec into the same format as this one
 geo_ds <- matrix(ds, nrow = 48, ncol = 2, byrow = TRUE)
 
 ds_change <- matrix(NA, nrow = 48, ncol = 2)
 ds_change <- m - geo_ds/100
 
-png("../Figures/ds_KDeffectPlot_geomorph.png")
-plotRefToTarget(m, ds_change, method = "points", 
-                links = wing.links, mag = 0.5, 
-                gridPars=plotparam)
+png("../Figures/ds_KDeffectPlot_geomorph_1x.png")
+plotRefToTarget(m, ds_change, method = "points",
+                links = wing.links, mag = 1,
+                gridPars=wing.spec)
 dev.off()
 
 geo_emc <- matrix(emc, nrow = 48, ncol = 2, byrow = TRUE)
@@ -392,10 +406,10 @@ geo_emc <- matrix(emc, nrow = 48, ncol = 2, byrow = TRUE)
 emc_change <- matrix(NA, nrow = 48, ncol = 2)
 emc_change <- m - geo_emc/100
 
-png("../Figures/emc_KDeffectPlot_geomorph_5x.png")
-plotRefToTarget(m, emc_change, method = "points", 
-                links = wing.links, mag = 5, 
-                gridPars=plotparam)
+png("../Figures/emc_KDeffectPlot_geomorph_2x.png")
+plotRefToTarget(m, emc_change, method = "points",
+                links = wing.links, mag = 2,
+                gridPars=wing.spec)
 dev.off()
 
 
@@ -404,9 +418,9 @@ geo_neur <- matrix(as.numeric(neur), nrow = 48, ncol = 2, byrow = TRUE)
 neur_change <- matrix(NA, nrow = 48, ncol = 2)
 neur_change <- m - geo_neur/100
 
-png("../Figures/neur_KDeffectPlot_geomorph_1x.png")
-plotRefToTarget(m, neur_change, method = "points", 
-                links = wing.links, mag = 1, 
+png("../Figures/neur_KDeffectPlot_geomorph_2x.png")
+plotRefToTarget(m, neur_change, method = "points",
+                links = wing.links, mag = 2,
                 gridPars=wing.spec)
 dev.off()
 

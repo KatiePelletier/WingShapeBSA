@@ -1,0 +1,52 @@
+#the reviewrs asked to check that my results are not just due to uneven sampling 
+#So I will subsample down to a common depth and re-run ACER. 
+#going with 75x to be conservative? 
+
+#Using the subsample pileup function (going to do this with the masked mpileup)
+
+#target coverage is more like a min coverage. 
+#max coverage ignores sites with greater than than coverage 
+#fraction preserves allele frequencies. 
+
+perl ~/bin/popoolation_1.2.2/basic-pipeline/subsample-pileup.pl --input wild_nomerge_repeatmask_indelmask.mpileup --output wild_nomerge_repeatmask_indelmask_cov75.mpileup --target-coverage 75 --max-coverage 400 --min-qual 20 --method fraction
+
+#then to make the sync
+#this ran crazy fast!! 
+java -ea -Xmx32g -jar /usr/local/popoolation/mpileup2sync.jar --input wild_nomerge_repeatmask_indelmask_cov75.mpileup  --output wild_nomerge_cov75.sync 
+
+#and to subset out the core genome for speed and such 
+
+grep "^2L" wild_nomerge_cov75.sync > wild_nomerge_cov75CoreGenome.sync
+grep "^2R" wild_nomerge_cov75.sync >> wild_nomerge_cov75CoreGenome.sync
+grep "^3L" wild_nomerge_cov75.sync >> wild_nomerge_cov75CoreGenome.sync
+grep "^3R" wild_nomerge_cov75.sync >> wild_nomerge_cov75CoreGenome.sync
+grep "^4" wild_nomerge_cov75.sync>> wild_nomerge_cov75CoreGenome.sync
+grep "^X" wild_nomerge_cov75.sync >> wild_nomerge_cov75CoreGenome.sync
+
+
+#tyler says he did the subsample down in the sync, not the pileup using a specific script from Kapoon. 
+#That was probably my problem. 
+#this does sample the X to 0.5 because it assumes that the 
+
+python /home/katie/bin/SubsampleSync.py --sync wild_masked_coregenome.sync --target-cov 75 --min-cov 10 > wild_masked_coregenome_75subsample.sync
+
+#changes to be tabs.
+awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4, $5, $7, $8, $10, $11, $14, $15}' wild_masked_coregenome_75subsample.sync > LRpoolsOnly_wild_masked_coregenome_75subsample.sync
+
+
+#I also want run ACER on each population separately. 
+
+#I think the easiest way to do this is to split the sync? 
+## need the first 3 cols and then the left and right pool for every population
+
+#4&5 = CMO
+#7&8 = FVW13
+#10&11 = FVW14
+#14&15 = PHO
+
+awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $4, $5}' wild_masked_coregenome.sync > CMO_masked_coregenome.sync &
+awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $7, $8}' wild_masked_coregenome.sync > FVW13_masked_coregenome.sync &
+awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $10, $11}' wild_masked_coregenome.sync > FVW14_masked_coregenome.sync &
+awk 'BEGIN {OFS="\t"} {print $1, $2, $3, $14, $15}' wild_masked_coregenome.sync > PHO_masked_coregenome.sync 
+
+CMH by pool doesn't work because there is only one replicate. Just plotting out the fst instead 

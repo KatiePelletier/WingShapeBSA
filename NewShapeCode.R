@@ -1,5 +1,6 @@
 ####Wild wings shape stuff for the paper and making final figures. 
 library(tidyverse)
+library(emmeans)
 
 ########################
 source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R" )
@@ -79,9 +80,9 @@ WingEffect( as.matrix(selvec[3,3:98])/100, emc_vec/100, emc_vec/100, scale.facto
 WingEffect( as.matrix(selvec[3,3:98])/100, neur/100, neur/100, scale.factor=1)
 
 #magnitude of ds effect is 10x that of emc effect. 
-norm(ds_vec) #2.058989
-norm(emc_vec) #0.2057204
-norm(neur) #21.12176 why so giant? 
+norm(ds_vec, type = "2") #5.542832
+norm(emc_vec, type = "2") #0.4469862
+norm(neur, type = "2") #2.847019 why so giant? 
 
 
 #####F14with females plot for the paper####
@@ -126,7 +127,7 @@ boys_all$ds <- projFunction(as.matrix(boyssize), t(ds_vec))
 
 #checking against Will's 
 #close but not perfect... ok.... so something is up here.
-#Will included the F in the model so data was a little diffrent (did not subset boys)
+#Will included the F in the model so data was a little different (did not subset boys)
 cor(boys_all$ds_proj, boys_all$ds)
 
 boys_all$emc <- projFunction(as.matrix(boyssize), t(emc_vec))
@@ -156,11 +157,164 @@ boys_all$neur <- projFunction(as.matrix(boyssize), as.matrix(neur))
 # boysonly$sd <- projFunction(as.matrix(boyssize), 
 #                             t(sd_vector)
 
-# boysonly$PC1 <- prcomp(boyssize )$x[,1]
-# boysonly$PC2 <- prcomp( boyssize )$x[,2]
-# boysonly$PC3 <- prcomp( boyssize )$x[,3]
-# boysonly$PC4 <- prcomp( boyssize )$x[,4]
-# boysonly$PC5 <- prcomp( boyssize )$x[,5]
+
+
+################some extra paper plots###########################
+
+#what a dumb way to do this. Not sure why I worte it like this???
+boys_all$PC1 <- prcomp(boyssize )$x[,1]
+boys_all$PC2 <- prcomp( boyssize )$x[,2]
+boys_all$PC3 <- prcomp( boyssize )$x[,3]
+boys_all$PC4 <- prcomp( boyssize )$x[,4]
+boys_all$PC5 <- prcomp( boyssize )$x[,5]
+
+
+#need to make fvw12 -> fvw13 to make everything match.
+boys_all$pop_yr <- gsub("fvw12", "fvw13", boys_all$pop_yr)
+
+pc12 <- ggplot(boys_all, aes(x = PC1, y = PC2, col = pop_yr)) + 
+  geom_point(alpha = 0.3) + 
+  theme(legend.position="none") + 
+  theme(text = element_text(size = 20))
+  
+
+pc34 <- ggplot(boys_all, aes(x = PC3, y = PC4, col = pop_yr)) + 
+  geom_point(alpha = 0.3) + 
+  labs(col = "Population") + 
+  theme(legend.position="none") +
+  theme(text = element_text(size = 20))
+
+forkey <- ggplot(boys_all, aes(x = PC3, y = PC4, col = pop_yr)) + 
+  geom_point() + 
+  labs(col = "Population") + 
+  theme(text = element_text(size = 20))
+
+key <- get_legend(forkey + 
+    guides(color = guide_legend(nrow = 1)) +
+    theme(legend.position = "bottom") 
+)
+
+#additionally want to do this with size left in (not modeling out as above). This will help (kinda) to compare allometries 
+
+#as a quick little check for me. 
+#Pho is a little smaller than the rest but overall not crazy
+
+png("../Figures/wildsize_density.png", width = 480, height = 480, units = "px")
+ggplot(boys_all, aes(x = CSize, fill = pop_yr)) + 
+  geom_density(alpha = 0.5) + 
+  xlab("Centroid Size") + 
+  labs(fill = "Population") + 
+  theme(text = element_text(size = 20))
+dev.off()
+
+#and a quick model 
+
+sizemod <- lm(CSize ~ pop_yr, data = boys_all)
+#these numbers are a little tough because it is in CS and not in mm^2.Pretty much shows what you think. FVW collections are the same, PHO is diffrent. Possibly an effect of time of year/micro enviormental stuff. I don't think this is particularly interesting
+summary(sizemod)  
+
+#This is not at all a suprising result. 
+anova(sizemod)
+
+#fitted val
+plot(emmeans(sizemod, "pop_yr"))
+
+#pairs.because I would rather a computer adds for me. 
+pairs(emmeans(sizemod, "pop_yr"))
+
+
+#all I really need
+withSize_pca <- prcomp(boys_all[,5:100])$x[,1:4]
+
+size_pc12 <- ggplot(boys_all, aes(x = withSize_pca[,1], y = withSize_pca[,2], col = pop_yr)) + 
+  geom_point(alpha = 0.3) + 
+  theme(legend.position="none") + 
+  xlab("PC1") + 
+  ylab("PC2") + 
+  theme(text = element_text(size = 20))
+
+size_pc34 <- ggplot(boys_all, aes(x = withSize_pca[,3], y = withSize_pca[,4], col = pop_yr)) + 
+  geom_point(alpha = 0.3) + 
+  theme(legend.position="none") + 
+  xlab("PC3") + 
+  ylab("PC4") + 
+  theme(text = element_text(size = 20))
+
+
+#library(cowplot)
+
+size_pan <- plot_grid(size_pc12, size_pc34, labels = c("A", "B"))
+no_size_pan <- plot_grid(pc12, pc34, labels = c("C", "D"))
+
+
+png("../Figures/wildPop_PCA.png", width = 700, height = 700, units = "px")
+plot_grid(size_pan, no_size_pan, key, ncol = 1, rel_widths = c(1,1,0.05))
+dev.off()
+  
+#Ian also recomended plotting the ds and neur projections
+
+png("../Figures/wild_proj_scatterplot.png", width = 480, height = 480, units = "px")
+ggplot(boys_all, aes(x = ds, y = neur, col = pop_yr)) + 
+  geom_point(alpha = 0.4) + 
+  labs(col = "Population") + 
+  theme(text = element_text(size = 20)) + 
+  xlab(expression(paste(italic("ds"), " shape vector"))) + ylab(expression(paste(italic("neur"), " shape vector")))
+
+dev.off()
+
+cor(boys_all$ds, boys_all$neur)
+
+
+#the final plot Ian recomended was taking the line means and doing a PCA/PCoA and then projecting the data onto those PCs. Should look really similar to the lines themselves. 
+
+#using the size corrected shape residuals. 
+m_pho <- colMeans(boys_all[boys_all$pop_yr == "pho14", 116:211])
+m_cmo <- colMeans(boys_all[boys_all$pop_yr == "cmo14", 116:211])
+m_fvw13 <- colMeans(boys_all[boys_all$pop_yr == "fvw13", 116:211])
+m_fvw14 <- colMeans(boys_all[boys_all$pop_yr == "fvw14", 116:211])
+
+#binding them together. 
+m_pops <- rbind(m_pho, m_cmo, m_fvw13, m_fvw14)
+dim(m_pops)
+
+# Euclidian Distances between shape means. Should match from geomoph estimates. 
+dist(m_pops)
+#PCA
+m_pca <- prcomp(m_pops)
+summary(m_pca)
+
+#use these for projection
+m_pca$rotation
+
+pop_yr <-rownames(m_pops) 
+all_means_pca <- data.frame(pop_yr, m_pops, m_pca$x)
+
+#truly useless. but looks like you would expect from PDs. 
+
+
+ggplot(all_means_pca, aes(x = PC1, y = PC2, col = pop_yr)) + 
+  geom_point() 
+
+
+means_PC1 <- as.numeric(m_pca$rotation[,1])
+means_PC2 <- as.numeric(m_pca$rotation[,2])
+
+#projecting wild wings onto these vectors. 
+boys_all$mPC1proj <- projFunction(as.matrix(boyssize), means_PC1)
+boys_all$mPC2proj <- projFunction(as.matrix(boyssize), means_PC2)
+
+png("../Figures/wild_PCsproj_scatterplot.png", width = 480, height = 480, units = "px")
+ggplot(boys_all, aes(x = mPC1proj, y = mPC2proj, col = pop_yr)) + 
+  geom_point(alpha = 0.2) + 
+  labs(col = "Population") + 
+  theme(text = element_text(size = 20)) + 
+  xlab("group means PC1 projection") + 
+  ylab("group means PC2 projection")
+
+dev.off()
+
+
+#################################################################
 
 #going to split populations to look at PCs and plot 
 
@@ -181,11 +335,11 @@ dev.off()
 
 cmo.cor.plot <- pairs( cmo[,207:212], lower.panel=panel.cor )
 
-f12 <- filter(boys_all, pop_yr == "fvw12")
-f12 <- cbind(f12, prcomp(f12[,111:206])$x[,1:57])
+f13 <- filter(boys_all, pop_yr == "fvw13")
+f13 <- cbind(f12, prcomp(f12[,111:206])$x[,1:57])
 
-png("../Figures/dsneur_wildwingsproj_f12_PC1to3.png")
-pairs( f12[,207:212], lower.panel=panel.cor )
+png("../Figures/dsneur_wildwingsproj_f13_PC1to3.png")
+pairs( f13[,207:212], lower.panel=panel.cor )
 dev.off()
 
 f14 <- filter(boys_all, pop_yr == "fvw14")
@@ -256,9 +410,10 @@ boys <- geomorph.data.frame(shape = shape,
 
 source("~/Dropbox/KatiePelletier/KP_geomorphwingfunctions.R")
 
+png("../Figures/all_wild_boysPlot.png")
 plotAllSpecimens(boys$shape, 
                  links = wing.links)
-
+dev.off()
 
 boysmod <- procD.lm(shape ~ CS + pop_year, data = boys)
 
@@ -283,7 +438,7 @@ summary(boys.pair, test.type = "dist")
 pairtable <- summary(boys.pair, test.type = "dist")[["summary.table"]]
 
 
-write.csv(pairtable, file = "../Tables/WildPopulation_pairwiseTest.csv", quote = FALSE, row.names = FALSE)
+write.csv(pairtable, file = "../Tables/WildPopulation_pairwiseTest.csv", quote = FALSE, row.names = TRUE)
 
 
 #I want to plot the mean shapes of the pools together. 
@@ -311,32 +466,32 @@ pool_mean <- lapply(new.coords, mshape)
 wing_flip <- matrix(rep(c(1, -1), 75), nrow = 75, ncol = 2, byrow = TRUE)
 
 
-png("../Figures/ds_wildpools_shapechange_cmo.png")
+png("../Figures/ds_wildpools_shapechange_cmo_mag2.png")
 plotRefToTarget(pool_mean[["cmo14 Left"]], 
                 pool_mean[["cmo14 Right"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 2, 
                 gridPars=wing.spec )
 dev.off()
 
-png("../Figures/ds_wildpools_shapechange_pho.png")
+png("../Figures/ds_wildpools_shapechange_pho_mag3.png")
 plotRefToTarget(pool_mean[["pho14 Left"]], 
                 pool_mean[["pho14 Right"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 3, 
                 gridPars=wing.spec)
 dev.off()
 
-png("../Figures/ds_wildpools_shapechange_fvw14.png")
+png("../Figures/ds_wildpools_shapechange_fvw14_mag3.png")
 plotRefToTarget(pool_mean[["fvw14 Left"]], 
                 pool_mean[["fvw14 Right"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 3, 
                 gridPars=wing.spec)
 dev.off()
 
 
-png("../Figures/ds_wildpools_shapechange_fvw12.png")
+png("../Figures/ds_wildpools_shapechange_fvw12_mag3.png")
 plotRefToTarget(pool_mean[["fvw12 Left"]], 
                 pool_mean[["fvw12 Right"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 2, 
                 gridPars=wing.spec)
 dev.off()
 
@@ -366,29 +521,29 @@ pool_mean <- lapply(new.coords, mshape)
 
 
 
-png("../Figures/_wildpools_shapechange_cmo.png")
+png("../Figures/wildpools_shapechange_cmo_mag2.png")
 plotRefToTarget(pool_mean[["cmo14 L"]], 
                 pool_mean[["cmo14 R"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 3, 
                 gridPars=wing.spec )
 dev.off()
 
-png("../Figures/_wildpools_shapechange_pho.png")
+png("../Figures/_wildpools_shapechange_pho_mag2.png")
 plotRefToTarget(pool_mean[["pho14 L"]], 
                 pool_mean[["pho14 R"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 2, 
                 gridPars=wing.spec)
 dev.off()
 
-png("../Figures/_wildpools_shapechange_fvw14.png")
+png("../Figures/_wildpools_shapechange_fvw14_mag2.png")
 plotRefToTarget(pool_mean[["fvw14 L"]], 
                 pool_mean[["fvw14 R"]], 
-                links = wing.links, method = "points", mag = 1, 
+                links = wing.links, method = "points", mag = 2, 
                 gridPars=wing.spec)
 dev.off()
 
 
-png("../Figures/_wildpools_shapechange_fvw12.png")
+png("../Figures/_wildpools_shapechange_fvw12_mag2.png")
 plotRefToTarget(pool_mean[["fvw12 L"]], 
                 pool_mean[["fvw12 R"]], 
                 links = wing.links, method = "points", mag = 1, 

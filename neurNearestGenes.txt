@@ -1,0 +1,77 @@
+#converting to make csv a bed file 
+
+cut -f15,16 ds_wild_ACER_significantSites_oneGen.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > ds_wild_significantSites_oneGen.bed  &
+cut -f15,16 ds_wild_ACER_significantSites_zeroGen.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > ds_wild_significantSites_zeroGen.bed  
+
+sed -i '1d' ds_wild_significantSites_oneGen.bed
+sed -i '1d' ds_wild_significantSites_zeroGen.bed
+
+
+
+
+neur_wild_ACER_significantSites_zeroGen_fdr.tsv
+
+#now to find closest genes with BedTools. 
+
+bedtools closest -d -a ds_wild_significantSites_oneGen.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > ds_wild_significantSites_oneGen_genes.table & 
+bedtools closest -d -a ds_wild_significantSites_zeroGen.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > ds_wild_significantSites_zeroGen_genes.table  
+
+#Now I want to pull these sites from the vcf
+#this gives me nothing. Is it because these are not in the vcf?
+
+bedtools intersect -a ../ACER/ds_wild_significantSites_zeroGen.bed -b dsWild_final.vcf  > ds_wild_sigSites_ACER_zeroGen.vcf 
+
+vcftools --vcf dsWild_final.vcf --positions ../ACER/ds_wild_significantSites_zeroGen.bed --out ds_wild_sigSites_ACER_zeroGen.vcf  --recode --keep-INFO-all
+
+
+
+
+
+
+
+cut -f11,12 neur_wild_ACER_significantSites_zeroGen.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > neur_wild_significantSites_zeroGen.bed  
+sed -i '1d' neur_wild_significantSites_zeroGen.bed
+bedtools closest -d -a neur_wild_significantSites_zeroGen.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > neur_wild_significantSites_zeroGen_genes.table  
+
+
+
+ java -Xmx32g -jar ~/bin/VarScan.v2.4.4.jar mpileup2cns 2L_ds_artsel_nomerge.mpileup  \
+ --min-coverage 50 \
+ --min-reads2 2 \
+ --strand-filter 0 \
+ --min-freq-for-hom 1 \
+ --min-avg-qual 20 \
+ --output-vcf 1 > ../vcf/2L_ds_artsel_nomerge_allsites_new_lowerMinReads.vcf
+
+java -Xmx32g -jar ~/bin/VarScan.v2.4.4.jar mpileup2cns wild_nomerge.mpileup --min-coverage 50 --min-reads2 2 --strand-filter 0 --min-freq-for-hom 1 --min-avg-qual 20 --variants --output-vcf 1 > ../vcf/ds_wild_noMerge_newJuly29.vcf
+
+
+
+
+grep "2L" wild_nomerge.mpileup > 2L_wild_nomerge.mpileup
+java -Xmx32g -jar ~/bin/VarScan.v2.4.4.jar mpileup2cns 2L_wild_nomerge.mpileup --min-coverage 50 --min-reads2 2 --strand-filter 0 --min-freq-for-hom 1 --min-avg-qual 20 --output-vcf 1 > ../vcf/2L_ds_wild_noMerge_noMask.vcf
+
+java -Xmx32g -jar ~/bin/VarScan.v2.4.4.jar mpileup2snp 2L_wild_nomerge.mpileup --min-coverage 50 --min-reads2 2 --strand-filter 0 --min-freq-for-hom 1 --min-avg-qual 20 --output-vcf 1 > ../vcf/2L_ds_wild_noMerge_noMask_snps.vcf &
+java -Xmx32g -jar ~/bin/VarScan.v2.4.4.jar mpileup2snp 2L_ds_artsel_nomerge.mpileup --min-coverage 50 --min-reads2 2 --strand-filter 0 --min-freq-for-hom 1 --min-avg-qual 20 --output-vcf 1 > ../vcf/2L_ds_artsel_noMerge_noMask_snps.vcf
+
+
+
+
+cut -f 11,12 neur_wild_ACER_significantSites_zeroGen_fdr.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > neur_wild_significantSites_zeroGen_fdr.bed  
+sed -i '1d' neur_wild_significantSites_zeroGen_fdr.bed
+bedtools closest -d -a neur_wild_significantSites_zeroGen_fdr.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > neur_wild_significantSites_zeroGen_genes_fdr.table  
+
+
+cut -f 15,16 ds_wild_ACER_significantSites_zeroGen_fdr.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > ds_wild_significantSites_zeroGen_fdr.bed  
+sed -i '1d' ds_wild_significantSites_zeroGen_fdr.bed
+bedtools closest -d -a ds_wild_significantSites_zeroGen_fdr.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > ds_wild_significantSites_zeroGen_genes_fdr.table  
+
+
+cut -f 9,10 ds_wild_ACER_significantSites_zeroGen_fdr_noPho.tsv | awk '{print $1,$2,$2}' | tr -s '[:blank:]' '\t' > ds_wild_significantSites_zeroGen_fdr_noPho.bed  
+sed -i '1d' ds_wild_significantSites_zeroGen_fdr_noPho.bed
+bedtools closest -d -a ds_wild_significantSites_zeroGen_fdr_noPho.bed -b /home/katie/flyGenome/dmel-all-r6.33_genesOnly_final.bed  > ds_wild_significantSites_zeroGen_genes_fdr_noPho.table  
+
+
+
+
+

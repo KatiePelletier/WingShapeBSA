@@ -270,15 +270,40 @@ linescan <- ggplot(data = fixed_artsel.5000, aes(x=number, y=dnup, color=chr, al
   #geom_vline(xintercept = egfr$number, size = 1, color = 'blue', alpha = 0.5) +
   geom_vline(xintercept = emc$number, size = 1, color = 'purple', alpha = 0.5) +
   geom_vline(xintercept = ds$number, size = 1, color = 'red', alpha = 0.5) + 
-  geom_hline(yintercept = cutoff2, alpha = 0.5) +
+  geom_hline(yintercept = cutoff, alpha = 0.5) +
   theme(text = element_text(size=15),
         axis.text.x= element_text(size=12), 
         axis.text.y= element_text(size=12), 
         panel.border = element_rect(colour = "black", 
                                     fill=NA, size=0.5))
 
-png(file = "../Output/emc_5000windows_dsemc_3sd.png",width=1060,height=412,units="px")
+png(file = "../Figures/emc_5000windows_dsemc_3sd.png",width=1060,height=412,units="px")
 linescan
+dev.off()
+
+emc.all.lines <- ggplot(data = fixed_artsel.5000, aes(x=number, y=dnup, color=chr, alpha = outlier)) + 
+  geom_point(size=1, show.legend = F) + 
+  scale_alpha_discrete(range = c(0.2,0.7)) +
+  theme(panel.background = element_blank()) +
+  #scale_y_continuous(limits=c(0, 1), breaks=seq(0, 1, 0.1)) +
+  xlab("Chromosome") +
+  ylab(expression(F[ST])) +
+  scale_x_discrete(limits=c(chrlabel),
+                   labels = c("X","2L", "2R", '3L', '3R', '4')) +
+  scale_colour_manual(values=c('black', 'grey46', 'black', 'grey46', 'black','grey46')) +
+  #geom_segment(aes(x = egfrline$number, y = 0, xend = egfrline$number, yend = egfrline$meanFst, color = 'red', alpha = 0.5)) +
+  geom_vline(xintercept = dsgenes.number, size = 1, color = 'red', alpha = 0.5) +
+  #geom_vline(xintercept = egfr$number, size = 1, color = 'blue', alpha = 0.5) +
+  geom_vline(xintercept = emc$number, size = 1, color = 'purple', alpha = 0.5) +
+  geom_vline(xintercept = ds$number, size = 1, color = 'red', alpha = 0.5) + 
+  geom_hline(yintercept = cutoff, alpha = 0.5) +
+  theme(text = element_text(size=15),
+        axis.text.x= element_text(size=12), 
+        axis.text.y= element_text(size=12), 
+        panel.border = element_rect(colour = "black", 
+                                    fill=NA, size=0.5))
+png(file = "../Figures/emc_5000windows_all_lines_3sd.png",width=1060,height=412,units="px")
+emc.all.lines
 dev.off()
 
 #############GO Analysis######################
@@ -289,7 +314,7 @@ library(bumphunter)
 
 
 
-peaks <- filter(fixed_artsel.5000, dnup >= cutoff2)
+peaks <- filter(fixed_artsel.5000, dnup >= cutoff)
 #Now I need to actaully make this a range of positions covered. Popoolation gives the middle point for the window as the position. So the range covered is +/- 2500 bp from there. 
 
 peaks$Lwindow <- peaks$window - 2500
@@ -301,6 +326,8 @@ peaks$Rwindow <- peaks$window + 2500
 #This makes an indexing table for each line in the peaks file, to organize them into clusters
 
 test <- fixed_artsel.5000
+
+library(bumphunter)
 
 #This max gap term may need to be adjusted, still lots of singletons. 
 c1 <- clusterMaker(test$chr, test$window, maxGap = 10000)
@@ -423,18 +450,18 @@ termStat(allgenes, "GO:0035329")
 
 resultFisher <- runTest(allgenes, algorithm = "classic", statistic = "fisher")
 
-allRes20_2sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 20)
+allRes20_3sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 20)
 
-write.csv(allRes20_2sd, file = "../Output/emc_artselGOtop20_2sd.csv")
+write.csv(allRes20_3sd, file = "../Output/emc_artselGOtop20_3sd.csv")
 
-allRes50_2sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 50)
+allRes50_3sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 50)
 
-write.csv(allRes50_2sd, file = "../Output/emc_artselGOtop50_2sd.csv")
+write.csv(allRes50_3sd, file = "../Output/emc_artselGOtop50_3sd.csv")
 
 
-allRes100_2sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 100)
+allRes100_3sd <- GenTable(allgenes, classic = resultFisher, ranksOf = "classic", topNodes = 100)
 
-write.csv(allRes100_2sd, file = "../Output/emc_artselGOtop100_2sd.csv")
+write.csv(allRes100_3sd, file = "../Output/emc_artselGOtop100_3sd.csv")
 
 
 
