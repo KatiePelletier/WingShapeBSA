@@ -2,7 +2,7 @@
 
 Use the final bam files, using merged files for the artifical selection and unmerged files for wild 
 
-[make mpileup script](https://github.com/KatiePelletier/WingShapeBSA/blob/master/make_mpileup.sh)
+[make mpileup script](https://github.com/KatiePelletier/WingShapeBSA/blob/master/GenomicMapping/make_mpileup.sh)
 
 # Masking Repeats
 
