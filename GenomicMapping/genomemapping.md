@@ -23,15 +23,15 @@ Will also filter for mapping quality less than 20.
 
 First I have to add read group information. In the future, I should do this earlier in the pipeline 
 
-[add read groups](https://github.com/KatiePelletier/WingShapeBSA/blob/master/addreplacegroups.sh)
+[add read groups](https://github.com/KatiePelletier/WingShapeBSA/GenomicMapping/addreplacegroups.sh)
 
 Indexing the files 
 
-[GATK index](https://github.com/KatiePelletier/WingShapeBSA/blob/master/gatkindex.sh)
+[GATK index](https://github.com/KatiePelletier/WingShapeBSA/GenomicMapping/gatkindex.sh)
 
 This step identifies the indels in the files 
 
-[find intrivals](https://github.com/KatiePelletier/WingShapeBSA/blob/master/gatkintravals.sh)
+[find intrivals](https://github.com/KatiePelletier/WingShapeBSA/GenomicMapping/gatkintravals.sh)
 
 Realignment step
 
