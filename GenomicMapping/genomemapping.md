@@ -3,7 +3,7 @@
 Trimming adapter sequences from files.  I used a very large adapter file because subsets of this were leaving adapter contamination in my sequences 
 Set minimum length to 36 bases. 
 
-[trimming script](https://github.com/KatiePelletier/WingShapeBSA/blob/master/trim.sh)
+[trimming script](https://github.com/KatiePelletier/WingShapeBSA/GenomicMapping/trim.sh)
 
 
 Mapped with BWA to the Drosophila melanogaster v6.23 genome
